@@ -1,0 +1,100 @@
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
+import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
+
+import Navbar  from "./components/Navbar";
+import Footer  from "./components/Footer";
+
+import Home          from "./pages/Home";
+import Products      from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+import Cart          from "./pages/Cart";
+import Checkout      from "./pages/Checkout";
+import Login         from "./pages/Login";
+import Register      from "./pages/Register";
+import Profile       from "./pages/Profile";
+import Orders        from "./pages/Orders";
+import Wishlist      from "./pages/Wishlist";
+
+import AdminDashboard  from "./pages/admin/Dashboard";
+import ManageProducts  from "./pages/admin/ManageProducts";
+import ManageOrders    from "./pages/admin/ManageOrders";
+
+// Separate component so useLocation works inside BrowserRouter
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <Routes>
+      <Route path="/"             element={<Home />} />
+      <Route path="/products"     element={<Products key={location.search} />} />
+      <Route path="/products/:id" element={<ProductDetail />} />
+      <Route path="/login"        element={<Login />} />
+      <Route path="/register"     element={<Register />} />
+
+      <Route path="/cart" element={
+        <ProtectedRoute><Cart /></ProtectedRoute>
+      } />
+      <Route path="/checkout" element={
+        <ProtectedRoute><Checkout /></ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute><Profile /></ProtectedRoute>
+      } />
+      <Route path="/orders" element={
+        <ProtectedRoute><Orders /></ProtectedRoute>
+      } />
+      <Route path="/wishlist" element={
+        <ProtectedRoute><Wishlist /></ProtectedRoute>
+      } />
+
+      <Route path="/admin" element={
+        <AdminRoute><AdminDashboard /></AdminRoute>
+      } />
+      <Route path="/admin/products" element={
+        <AdminRoute><ManageProducts /></AdminRoute>
+      } />
+      <Route path="/admin/orders" element={
+        <AdminRoute><ManageOrders /></AdminRoute>
+      } />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "#1e1e2e",
+                color: "#cdd6f4",
+                border: "1px solid #313244",
+                borderRadius: "10px",
+                fontSize: "14px",
+              },
+              success: { iconTheme: { primary: "#a6e3a1", secondary: "#1e1e2e" } },
+              error:   { iconTheme: { primary: "#f38ba8", secondary: "#1e1e2e" } },
+            }}
+          />
+          <div className="app-layout">
+            <Navbar />
+            <main className="main-content">
+              <AppRoutes />
+            </main>
+            <Footer />
+          </div>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;
