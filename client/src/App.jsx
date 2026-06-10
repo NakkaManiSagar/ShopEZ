@@ -18,6 +18,10 @@ import Register      from "./pages/Register";
 import Profile       from "./pages/Profile";
 import Orders        from "./pages/Orders";
 import Wishlist      from "./pages/Wishlist";
+import About         from "./pages/About";
+import Contact       from "./pages/Contact";
+import Privacy       from "./pages/Privacy";
+import Terms         from "./pages/Terms";
 
 import AdminDashboard  from "./pages/admin/Dashboard";
 import ManageProducts  from "./pages/admin/ManageProducts";
@@ -49,6 +53,10 @@ function AppRoutes() {
       <Route path="/wishlist" element={
         <ProtectedRoute><Wishlist /></ProtectedRoute>
       } />
+      <Route path="/about"   element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms"   element={<Terms />} />
 
       <Route path="/admin" element={
         <AdminRoute><AdminDashboard /></AdminRoute>
