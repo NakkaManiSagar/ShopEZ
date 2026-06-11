@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { sendWelcomeEmail } = require("../utils/sendEmail");
+const { sendWelcomeEmail, sendOTPEmail } = require("../utils/sendEmail");
 
 // Helper: generate JWT
 const generateToken = (id) =>
@@ -114,3 +114,53 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = { register, login, getProfile, updateProfile };
+
+
+// @desc   Send OTP to email
+// @route  POST /api/auth/forgot-password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: "No account with that email" });
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordOTP     = otp;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+    await user.save();
+
+    // Send OTP email
+    await sendOTPEmail(user, otp);
+
+    res.json({ success: true, message: "OTP sent to your email" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc   Verify OTP and reset password
+// @route  POST /api/auth/reset-password
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({
+      email,
+      resetPasswordOTP:     otp,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+
+    user.password             = newPassword;
+    user.resetPasswordOTP     = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: "Password reset successfully! Please login." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { register, login, getProfile, updateProfile, forgotPassword, resetPassword };
