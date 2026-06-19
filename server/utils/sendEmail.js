@@ -1,12 +1,9 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Use Resend's test sender unless you've verified your own domain
+const FROM_EMAIL = process.env.RESEND_FROM || "ShopEZ <onboarding@resend.dev>";
 
 // ── Order Confirmation Email ──────────────────────────────
 const sendOrderConfirmation = async (order, user) => {
@@ -52,8 +49,8 @@ const sendOrderConfirmation = async (order, user) => {
       </div>
     </body></html>`;
 
-  await transporter.sendMail({
-    from:    `"ShopEZ" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from:    FROM_EMAIL,
     to:      user.email,
     subject: `Order Confirmed #${order._id.toString().slice(-8).toUpperCase()} - ShopEZ`,
     html,
@@ -77,8 +74,8 @@ const sendWelcomeEmail = async (user) => {
       </div>
     </body></html>`;
 
-  await transporter.sendMail({
-    from:    `"ShopEZ" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from:    FROM_EMAIL,
     to:      user.email,
     subject: `Welcome to ShopEZ, ${user.name}!`,
     html,
@@ -105,8 +102,8 @@ const sendOTPEmail = async (user, otp) => {
       </div>
     </body></html>`;
 
-  await transporter.sendMail({
-    from:    `"ShopEZ" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from:    FROM_EMAIL,
     to:      user.email,
     subject: `Your ShopEZ Password Reset OTP: ${otp}`,
     html,
