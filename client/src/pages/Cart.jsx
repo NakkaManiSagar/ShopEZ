@@ -13,10 +13,13 @@ const Cart = () => {
   const shippingPrice = cart.totalPrice > 500 ? 0 : 50;
   const grandTotal    = cart.totalPrice + shippingPrice;
 
+  // Filter out any cart items where product failed to populate (deleted/invalid product)
+  const validItems = (cart.items || []).filter(item => item.product && item.product._id);
+
   const handleRemove = async (productId, name) => {
     try {
       await removeFromCart(productId);
-      toast.success(`${name} removed`);
+      toast.success(`${name || "Item"} removed`);
     } catch { toast.error("Failed to remove item"); }
   };
 
@@ -25,7 +28,7 @@ const Cart = () => {
     catch { toast.error("Failed to update quantity"); }
   };
 
-  if (!cart.items || cart.items.length === 0) {
+  if (validItems.length === 0) {
     return (
       <div className="container">
         <div className="empty-state" style={{ minHeight: "60vh" }}>
@@ -42,11 +45,10 @@ const Cart = () => {
     <div className="cart-page container">
       <div className="page-header">
         <h1 className="page-title">Your <span>Cart</span></h1>
-        <p className="page-subtitle">{cart.items.length} item{cart.items.length !== 1 ? "s" : ""}</p>
+        <p className="page-subtitle">{validItems.length} item{validItems.length !== 1 ? "s" : ""}</p>
       </div>
 
       <div className="cart-layout">
-        {/* Items list */}
         <div className="cart-items">
           <div className="cart-items-header">
             <span>Product</span>
@@ -55,21 +57,22 @@ const Cart = () => {
             <span></span>
           </div>
 
-          {cart.items.map((item) => {
+          {validItems.map((item) => {
             const product = item.product;
-            if (!product) return null;
+            const name     = product?.name || "Unnamed Product";
+            const category = product?.category || "";
+            const stock    = product?.stock ?? 99;
+            const thumb    = product?.thumbnail || `https://placehold.co/80x80/1a1a2e/e94560?text=${encodeURIComponent(name)}`;
+
             return (
               <div key={product._id} className="cart-item">
                 <div className="cart-item-info">
-                  <img
-                    src={product.thumbnail || `https://placehold.co/80x80/1a1a2e/e94560?text=${encodeURIComponent(product.name)}`}
-                    alt={product.name}
-                  />
+                  <img src={thumb} alt={name} />
                   <div>
                     <Link to={`/products/${product._id}`} className="cart-item-name">
-                      {product.name}
+                      {name}
                     </Link>
-                    <p className="cart-item-category">{product.category}</p>
+                    {category && <p className="cart-item-category">{category}</p>}
                     <p className="cart-item-unit-price">₹{item.price} each</p>
                   </div>
                 </div>
@@ -81,7 +84,7 @@ const Cart = () => {
                   </button>
                   <span>{item.quantity}</span>
                   <button onClick={() => handleQty(product._id, item.quantity + 1)}
-                    disabled={item.quantity >= product.stock}>
+                    disabled={item.quantity >= stock}>
                     <Plus size={13} />
                   </button>
                 </div>
@@ -89,7 +92,7 @@ const Cart = () => {
                 <p className="cart-item-total">₹{(item.price * item.quantity).toLocaleString()}</p>
 
                 <button className="cart-remove-btn"
-                  onClick={() => handleRemove(product._id, product.name)}>
+                  onClick={() => handleRemove(product._id, name)}>
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -101,7 +104,6 @@ const Cart = () => {
           </button>
         </div>
 
-        {/* Order summary */}
         <div className="cart-summary">
           <h3 className="summary-title">Order Summary</h3>
 

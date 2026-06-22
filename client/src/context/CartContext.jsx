@@ -9,7 +9,6 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart]       = useState({ items: [], totalPrice: 0 });
   const [cartLoading, setCartLoading] = useState(false);
 
-  // Fetch cart when user logs in
   useEffect(() => {
     if (user) fetchCart();
     else setCart({ items: [], totalPrice: 0 });
@@ -19,7 +18,7 @@ export const CartProvider = ({ children }) => {
     try {
       setCartLoading(true);
       const { data } = await API.get("/cart");
-      setCart(data.cart);
+      setCart(data.cart || { items: [], totalPrice: 0 });
     } catch (err) {
       console.error("Cart fetch failed", err);
     } finally {
@@ -41,6 +40,8 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     const { data } = await API.delete(`/cart/${productId}`);
     setCart(data.cart);
+    // Re-fetch to ensure populated product data is fresh
+    await fetchCart();
   };
 
   const clearCart = async () => {
