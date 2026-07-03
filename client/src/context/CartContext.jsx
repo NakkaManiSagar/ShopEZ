@@ -6,12 +6,17 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
-  const [cart, setCart]       = useState({ items: [], totalPrice: 0 });
+  const [cart, setCart]             = useState({ items: [], totalPrice: 0 });
   const [cartLoading, setCartLoading] = useState(false);
 
   useEffect(() => {
-    if (user) fetchCart();
-    else setCart({ items: [], totalPrice: 0 });
+    if (user) {
+      // Small delay to ensure token is set in localStorage before fetching
+      const timer = setTimeout(() => fetchCart(), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setCart({ items: [], totalPrice: 0 });
+    }
   }, [user]);
 
   const fetchCart = async () => {
@@ -21,6 +26,7 @@ export const CartProvider = ({ children }) => {
       setCart(data.cart || { items: [], totalPrice: 0 });
     } catch (err) {
       console.error("Cart fetch failed", err);
+      setCart({ items: [], totalPrice: 0 });
     } finally {
       setCartLoading(false);
     }
@@ -29,18 +35,19 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (productId, quantity = 1) => {
     const { data } = await API.post("/cart", { productId, quantity });
     setCart(data.cart);
+    // Re-fetch to get fully populated product details
+    await fetchCart();
     return data;
   };
 
   const updateQuantity = async (productId, quantity) => {
     const { data } = await API.put(`/cart/${productId}`, { quantity });
     setCart(data.cart);
+    await fetchCart();
   };
 
   const removeFromCart = async (productId) => {
-    const { data } = await API.delete(`/cart/${productId}`);
-    setCart(data.cart);
-    // Re-fetch to ensure populated product data is fresh
+    await API.delete(`/cart/${productId}`);
     await fetchCart();
   };
 
