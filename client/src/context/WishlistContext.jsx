@@ -16,16 +16,17 @@ export const WishlistProvider = ({ children }) => {
   }, [user]);
 
   const fetchWishlist = async () => {
-    try {
-      setWishlistLoading(true);
-      const { data } = await API.get("/wishlist");
-      setWishlist(data.products);
-    } catch (err) {
-      console.error("Wishlist fetch failed", err);
-    } finally {
-      setWishlistLoading(false);
-    }
-  };
+  try {
+    setWishlistLoading(true);
+    const { data } = await API.get("/wishlist");
+    setWishlist(data.products);
+  } catch (err) {
+    // Silently fail - user might not be logged in
+    setWishlist([]);
+  } finally {
+    setWishlistLoading(false);
+  }
+};
 
   const toggleWishlist = async (productId) => {
     try {
