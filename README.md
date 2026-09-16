@@ -1,11 +1,9 @@
-mkdir -p /home/claude/ShopEZ && cat > /home/claude/ShopEZ/README.md << 'ENDOFFILE'
+
 # ShopEZ 🛒
 
 A full-stack e-commerce web application built using the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://shop-ez-gamma.vercel.app)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/NakkaManiSagar/ShopEZ)
-
 ---
 
 ## 🌐 Live Links
@@ -14,8 +12,6 @@ A full-stack e-commerce web application built using the **MERN Stack** (MongoDB,
 |---------|-----|
 | Frontend | https://shop-ez-gamma.vercel.app |
 | Backend API | https://shopez-backend-r7xc.onrender.com |
-| GitHub | https://github.com/NakkaManiSagar/ShopEZ |
-
 ---
 
 ## 📌 Project Overview
