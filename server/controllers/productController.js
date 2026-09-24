@@ -5,6 +5,16 @@ const generateAiTags = ({ name = "", description = "", category = "", brand = ""
   return [...new Set(text.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((word) => word.length > 3))].slice(0, 12);
 };
 
+const sanitizeUpdatePayload = (input) => {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+
+  return Object.entries(input).reduce((acc, [key, value]) => {
+    if (key.startsWith("$") || key.includes(".")) return acc;
+    acc[key] = value;
+    return acc;
+  }, {});
+};
+
 // @route   GET /api/products
 const getProducts = async (req, res) => {
   try {
@@ -80,7 +90,7 @@ const addReview = async (req, res) => {
 // ADMIN routes
 const createProduct = async (req, res) => {
   try {
-    const payload = { ...req.body };
+    const payload = sanitizeUpdatePayload(req.body);
     if (!Array.isArray(payload.aiTags) || payload.aiTags.length === 0) {
       payload.aiTags = generateAiTags(payload);
     }
@@ -94,7 +104,7 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const payload = { ...req.body };
+    const payload = sanitizeUpdatePayload(req.body);
     if (!Array.isArray(payload.aiTags) || payload.aiTags.length === 0) {
       const existingProduct = await Product.findById(req.params.id);
       if (!existingProduct) return res.status(404).json({ success: false, message: "Product not found" });

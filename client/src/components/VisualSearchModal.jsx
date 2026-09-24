@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAI } from "../context/AIContext";
 
+const safeImageUrl = (value = "") => {
+  if (!value || typeof value !== "string") return "";
+  if (
+    value.startsWith("https://") ||
+    value.startsWith("http://") ||
+    value.startsWith("blob:") ||
+    value.startsWith("data:image/")
+  ) {
+    return value;
+  }
+  return "";
+};
+
 const VisualSearchModal = ({ isOpen, onClose }) => {
   const { searchByImage, visualResults, loading, lastQuery } = useAI();
   const [file, setFile] = useState(null);
@@ -29,7 +42,7 @@ const VisualSearchModal = ({ isOpen, onClose }) => {
         </div>
         <div className="modal-form ai-modal-content">
           <input type="file" accept="image/*" onChange={onFileChange} className="form-input" />
-          {preview && <img src={preview} alt="preview" className="ai-preview" />}
+          {preview && <img src={safeImageUrl(preview)} alt="preview" className="ai-preview" />}
 
           <button className="btn btn-primary" onClick={handleSearch} disabled={!file || loading}>
             {loading ? "Searching..." : "Find Similar Products"}
@@ -41,7 +54,7 @@ const VisualSearchModal = ({ isOpen, onClose }) => {
             <div className="ai-results-grid">
               {visualResults.map((product) => (
                 <Link to={`/products/${product._id}`} key={product._id} className="ai-result-card" onClick={onClose}>
-                  <img src={product.thumbnail || product.images?.[0]} alt={product.name} />
+                  <img src={safeImageUrl(product.thumbnail || product.images?.[0])} alt={product.name} />
                   <p>{product.name}</p>
                 </Link>
               ))}
