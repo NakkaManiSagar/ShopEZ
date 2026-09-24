@@ -42,6 +42,10 @@ const placeOrder = async (req, res) => {
       totalPrice,
     });
 
+    await User.findByIdAndUpdate(req.user._id, {
+      $addToSet: { purchaseHistory: { $each: orderItems.map((item) => item.product) } },
+    });
+
     // Clear cart
     cart.items = [];
     cart.totalPrice = 0;

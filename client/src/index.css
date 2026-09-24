@@ -1498,3 +1498,61 @@ select.form-input option { background: var(--bg-3); }
   .values-grid  { grid-template-columns: 1fr; }
   .about-stats  { grid-template-columns: repeat(2, 1fr); }
 }
+/* AI Shopping */
+.ai-modal { max-width: 760px; }
+.ai-modal-content { display: grid; gap: 14px; }
+.ai-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+.ai-query {
+  color: var(--text-2);
+  font-size: 13px;
+  background: rgba(79, 142, 247, 0.12);
+  border: 1px solid rgba(79, 142, 247, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.ai-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.ai-result-card {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--surface-2);
+}
+.ai-result-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+}
+.ai-result-card p {
+  margin: 0;
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 50px;
+}
+.ai-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(190px, 220px);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.pd-ai-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}

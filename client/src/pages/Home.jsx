@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight, ShoppingBag, Zap, Shield, Truck, RotateCcw, Star } from "lucide-react";
 import API from "../api/axios";
 import ProductCard from "../components/ProductCard";
 import Loader from "../components/Loader";
+import VisualSearchModal from "../components/VisualSearchModal";
+import MoodSearchModal from "../components/MoodSearchModal";
+import AIRecommendationsCarousel from "../components/AIRecommendationsCarousel";
 
 const CATEGORIES = [
   { name: "Electronics",   emoji: "💻", color: "#4f8ef7" },
@@ -26,7 +29,8 @@ const FEATURES = [
 const Home = () => {
   const [featured, setFeatured] = useState([]);
   const [loading, setLoading]   = useState(true);
-  const navigate = useNavigate();
+  const [showVisualSearch, setShowVisualSearch] = useState(false);
+  const [showMoodSearch, setShowMoodSearch] = useState(false);
 
   useEffect(() => {
     API.get("/products/featured")
@@ -62,6 +66,12 @@ const Home = () => {
               <Link to="/products?category=Electronics" className="btn btn-outline">
                 Explore Electronics
               </Link>
+              <button className="btn btn-outline" onClick={() => setShowVisualSearch(true)}>
+                Visual Search
+              </button>
+              <button className="btn btn-outline" onClick={() => setShowMoodSearch(true)}>
+                Mood Search
+              </button>
             </div>
             <div className="hero-stats">
               <div className="hero-stat"><strong>50K+</strong><span>Products</span></div>
@@ -154,6 +164,8 @@ const Home = () => {
         )}
       </section>
 
+      <AIRecommendationsCarousel />
+
       {/* ── Promo Banner ── */}
       <section className="container">
         <div className="promo-banner">
@@ -174,6 +186,8 @@ const Home = () => {
         </div>
       </section>
 
+      <VisualSearchModal isOpen={showVisualSearch} onClose={() => setShowVisualSearch(false)} />
+      <MoodSearchModal isOpen={showMoodSearch} onClose={() => setShowMoodSearch(false)} />
     </div>
   );
 };

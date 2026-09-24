@@ -9,6 +9,9 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import Loader from "../components/Loader";
 import toast from "react-hot-toast";
+import VisualSearchModal from "../components/VisualSearchModal";
+import MoodSearchModal from "../components/MoodSearchModal";
+import AIRecommendationsCarousel from "../components/AIRecommendationsCarousel";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -20,6 +23,8 @@ const ProductDetail = () => {
   const [loading, setLoading]     = useState(true);
   const [qty, setQty]             = useState(1);
   const [adding, setAdding]       = useState(false);
+  const [showVisualSearch, setShowVisualSearch] = useState(false);
+  const [showMoodSearch, setShowMoodSearch] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const autoPlayRef = useRef(null);
@@ -257,6 +262,14 @@ const ProductDetail = () => {
               </button>
             </div>
           )}
+          <div className="pd-ai-actions">
+            <button className="btn btn-outline" onClick={() => setShowVisualSearch(true)}>
+              Find Similar by Photo
+            </button>
+            <button className="btn btn-outline" onClick={() => setShowMoodSearch(true)}>
+              Shop by Mood
+            </button>
+          </div>
 
           {/* Delivery info */}
           <div className="pd-features">
@@ -335,6 +348,10 @@ const ProductDetail = () => {
           </div>
         )}
       </div>
+
+      <AIRecommendationsCarousel />
+      <VisualSearchModal isOpen={showVisualSearch} onClose={() => setShowVisualSearch(false)} />
+      <MoodSearchModal isOpen={showMoodSearch} onClose={() => setShowMoodSearch(false)} />
     </div>
   );
 };

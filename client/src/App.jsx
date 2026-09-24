@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { AIProvider } from "./context/AIContext";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 
 import Navbar  from "./components/Navbar";
@@ -77,27 +78,29 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: "#1e1e2e",
-                color: "#cdd6f4",
-                border: "1px solid #313244",
-                borderRadius: "10px",
-                fontSize: "14px",
-              },
-              success: { iconTheme: { primary: "#a6e3a1", secondary: "#1e1e2e" } },
-              error:   { iconTheme: { primary: "#f38ba8", secondary: "#1e1e2e" } },
-            }}
-          />
-          <div className="app-layout">
-            <Navbar />
-            <main className="main-content">
-              <AppRoutes />
-            </main>
-            <Footer />
-          </div>
+            <AIProvider>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    background: "#1e1e2e",
+                    color: "#cdd6f4",
+                    border: "1px solid #313244",
+                    borderRadius: "10px",
+                    fontSize: "14px",
+                  },
+                  success: { iconTheme: { primary: "#a6e3a1", secondary: "#1e1e2e" } },
+                  error:   { iconTheme: { primary: "#f38ba8", secondary: "#1e1e2e" } },
+                }}
+              />
+              <div className="app-layout">
+                <Navbar />
+                <main className="main-content">
+                  <AppRoutes />
+                </main>
+                <Footer />
+              </div>
+            </AIProvider>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
