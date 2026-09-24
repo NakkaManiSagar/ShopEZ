@@ -25,7 +25,7 @@ ShopEZ is a production-grade e-commerce platform that replicates the core functi
 ### Frontend
 - **React 18** (Vite)
 - **React Router DOM v6**
-- **Context API** (Auth, Cart, Wishlist)
+- **Context API** (Auth, Cart, Wishlist, AI Search)
 - **Axios** with JWT interceptor
 - **CSS Custom Properties** — dark luxury design system
 - **Lucide React** icons
@@ -37,6 +37,7 @@ ShopEZ is a production-grade e-commerce platform that replicates the core functi
 - **JSON Web Tokens** (jsonwebtoken)
 - **bcryptjs** password hashing
 - **Multer + Cloudinary** image upload
+- **Claude API (Anthropic)** AI analysis for visual/mood/recommendation search
 - **Razorpay** payment gateway
 - **Resend** transactional email
 
@@ -86,8 +87,8 @@ ShopEZ is a production-grade e-commerce platform that replicates the core functi
 
 | Collection | Key Fields |
 |-----------|------------|
-| Users | name, email, password (hashed), role, address, resetPasswordOTP |
-| Products | name, price, discountPrice, category, stock, images[], reviews[], isFeatured |
+| Users | name, email, password (hashed), role, address, purchaseHistory[], resetPasswordOTP |
+| Products | name, price, discountPrice, category, stock, images[], aiTags[], reviews[], isFeatured |
 | Carts | user (unique), items[], totalPrice (auto-calculated) |
 | Orders | user, items[] (price snapshot), shippingAddress, paymentMethod, paymentStatus, orderStatus |
 | Wishlists | user (unique), products[] |
@@ -141,6 +142,13 @@ ShopEZ is a production-grade e-commerce platform that replicates the core functi
 | POST | /create-order |
 | POST | /verify |
 
+### AI Shopping — /api/ai
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| POST | /visual-search | Public |
+| POST | /recommendations | Private |
+| POST | /mood-search | Public |
+
 ### Wishlist — /api/wishlist
 | Method | Endpoint |
 |--------|----------|
@@ -182,6 +190,12 @@ cd ShopEZ
 # Backend
 cd server
 npm install
+
+# Create server/.env with required keys:
+# MONGODB_URI, JWT_SECRET, CLIENT_URL
+# CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+# RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RESEND_API_KEY
+# CLAUDE_API_KEY, ANTHROPIC_API_URL (optional; defaults to Anthropic messages API)
 
 # Seed database
 node seeder.js

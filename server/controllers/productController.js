@@ -1,5 +1,20 @@
 const Product = require("../models/Product");
 
+const generateAiTags = ({ name = "", description = "", category = "", brand = "" }) => {
+  const text = `${name} ${description} ${category} ${brand}`.toLowerCase();
+  return [...new Set(text.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((word) => word.length > 3))].slice(0, 12);
+};
+
+const sanitizeUpdatePayload = (input) => {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+
+  return Object.entries(input).reduce((acc, [key, value]) => {
+    if (key.startsWith("$") || key.includes(".")) return acc;
+    acc[key] = value;
+    return acc;
+  }, {});
+};
+
 // @route   GET /api/products
 const getProducts = async (req, res) => {
   try {
@@ -75,7 +90,12 @@ const addReview = async (req, res) => {
 // ADMIN routes
 const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const payload = sanitizeUpdatePayload(req.body);
+    if (!Array.isArray(payload.aiTags) || payload.aiTags.length === 0) {
+      payload.aiTags = generateAiTags(payload);
+    }
+
+    const product = await Product.create(payload);
     res.status(201).json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -84,7 +104,14 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const payload = sanitizeUpdatePayload(req.body);
+    if (!Array.isArray(payload.aiTags) || payload.aiTags.length === 0) {
+      const existingProduct = await Product.findById(req.params.id);
+      if (!existingProduct) return res.status(404).json({ success: false, message: "Product not found" });
+      payload.aiTags = generateAiTags({ ...existingProduct.toObject(), ...payload });
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
     res.json({ success: true, product });
   } catch (error) {

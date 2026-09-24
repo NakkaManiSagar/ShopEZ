@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     phone: { type: String, default: "" },
     avatar: { type: String, default: "" },
+    purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     resetPasswordOTP:     { type: String },
     resetPasswordExpires: { type: Date },
   },
